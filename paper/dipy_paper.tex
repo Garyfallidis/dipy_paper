@@ -1165,7 +1165,7 @@ track_density = density_map(track, shape,
                             affine=affine)
 \end{python}
 In this example \texttt{shape} is the shape of the 3d image to be returned, and
-\texttt{track_density} is a 3d volume where the intensity of each voxel is the
+\texttt{track\_density} is a 3d volume where the intensity of each voxel is the
 number of streamlines in \texttt{track} that pass though that voxel. Note that
 each streamline is counted once per voxel even if multiple points in the
 streamline lie in that voxel.
@@ -1204,11 +1204,11 @@ M, M_sl = connectivity_matrix(track, labels,
                               return_mapping=True)
 \end{python}
 
-Here because we've made the matrix symmetric, `M[i, j] == M[j, i]` is the number
+Here because we've made the matrix symmetric, \texttt{M[i, j] == M[j, i]} is the number
 of streamlines in \texttt{track} that connect region \texttt{i} to \texttt{j}
 or \texttt{j} to \texttt{i}. Similarly because we've set
-\texttt{return_mapping=True}, we can get a list of all those streamlines by
-doing \texttt{M_sl[i, j]}.
+\texttt{return\_mapping=True}, we can get a list of all those streamlines by
+looking up \texttt{M\_sl[i, j]}.
 
 While it is common to apply these kinds of operations in voxel space of
 the diffusion MRI images used to create the streamlines, this is not a
