@@ -1089,7 +1089,7 @@ estimate multiple possible pathways though each point by taking into
 account the uncertainty in fiber direction at those points. The uncertainty in
 fiber direction can be estimated as a fiber orientation PDF (probability distribution
 function) and this PDF can be used along with a Monte Carlo sampling to
-generate streamlines\citep{Morris2008}. Streamlines are generated using a
+generate streamlines \citep{morris2008probabilistic}. Streamlines are generated using a
 Markov process which is similar to deterministic fiber tracking. Streamlines begin
 at a seed point and continue along a propagation direction which is randomly
 chosen from a PDF. THe propagation direction is continually adjusted by
@@ -1103,14 +1103,14 @@ first method allows the user to provide the PDF evaluated on a discrete set of
 possible tracking directions. For example the FOD (fiber orientation distribution) 
 obtained by fitting the CSD (constrained spherical deconvolution) model to diffusion
 data can be used as an estimate of the PDF, because it represents a fiber distribution
-associated with the measured diffusion signal \citep{Jeurissen2011}. The user must
+associated with the measured diffusion signal \citep{jeurissen2011probabilistic}. The user must
 also provide a set of seeds to track from and stoping criteria. Currently a white matter
 mask and maximum turn angle are used as stopping criteria.
 
 The second interface for probabilistic tracking is meant to accommodate	tracking
 methods where the PDF cannot be easily computed. It is often much easier and less
 computationally expensive to sample from a PDF than it is to evaluate the PDF. For
-example, residual bootstrap fiber tracking methods fall into this category \citep{Berman2008}.
+example, residual bootstrap fiber tracking methods fall into this category \citep{berman2008probabilistic}.
 In this case we combine a sampling method with the diffusion data and a diffusion Model,
 and pass this to the Markov tracking framework. Streamlines can now be generated
 can now be generated much as before whiteout explicitly evaluating the PDF at each
