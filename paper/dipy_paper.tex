@@ -1079,7 +1079,7 @@ described in detail below.
 \subsection{Deterministic}
 
 \subsubsection{EuDX.}
-Euler Delta Crossings~\citep{Garyfallidis_thesis} is the first tracking
+Also known as Euler Delta Crossings~\citep{Garyfallidis_thesis} is the first tracking
 method that was implemented in Dipy. We created an algorithm that has many
 similarities with the classical deterministic methods~\citep{Mori1999,
   conturo-lori-etal:99, basser-pajevic-etal:00} and with more recent ones as
@@ -1094,8 +1094,8 @@ isotropic voxel size then a reslicing preprocessing step is
 required to make the data isotropic.
 
 In order to create streamlines, we initially need to provide one or more seed
-points $\mathbf{p}$. These are the points from which the streamlines grow. They can
-be chosen randomly or can be specified explicitly. However, seed
+points $\mathbf{s}$. The points from where the streamlines will start growing. These can
+be chosen randomly or they can be specified explicitly. However, these seed
 points need to be constrained by the volume's dimensions. Every seed point
 $\mathbf{p}_{0}$ becomes the starting point for the track propagation. For the
 integration we solve for
@@ -1142,7 +1142,7 @@ approximated rather than the full brain.
 \begin{figure}
 \includegraphics[scale=0.75]{Figures/pretty_streamlines.eps}
 \centering{}
-\caption{An example of EuDX-based fiber tracking applied on a real
+\caption{An example of EuDX based fiber tracking applied on a real
   human brain dataset\label{Fig:pretty_streamlines}}
 \end{figure}
 
@@ -1160,12 +1160,12 @@ at a seed point and continue along a propagation direction which is randomly
 chosen from a PDF. The propagation direction is continually adjusted by
 sampling from the PDF at each new location along the path. This continues until
 some stopping criteria are met. Notice that this framework is equivalent to
-deterministic fiber tracking if the PDF at each point is a delta function on
+deterministic fiber tracking if the PDF at each point is a delta function of
 one fiber direction.
 
 Dipy has implemented two interfaces for probabilistic Markov fiber tracking. The
 first method allows the user to provide the PDF evaluated on a discrete set of
-possible tracking directions. For example the FOD (fiber orientation distribution)
+possible tracking directions. For example the fODF (fiber orientation distribution)
 obtained by fitting the CSD (constrained spherical deconvolution) model to diffusion
 data can be used as an estimate of the PDF, because it represents a fiber distribution
 associated with the measured diffusion signal \citep{jeurissen2011probabilistic}. The user must
@@ -1179,7 +1179,7 @@ In this case we combine a sampling method with the diffusion data and a diffusio
 and pass this to the Markov tracking framework. Streamlines can now be generated
 as before without explicitly evaluating the PDF at each
 point in the diffusion data. This framework is designed to be flexible and easily
-customizable so that a wide variety of Markov tracking methods can be expressed.
+customizable so that a wide variety of tracking methods can be expressed.
 
 \section{Fiber analysis and post-processing}\label{post_tracking}
 
@@ -1202,7 +1202,7 @@ starts the clustering procedure the streamlines will be downsampled so that
 each one has the same number of points (here 18) and equal length segments. This
 preprocessing step is a prerequisite for QB.
 \begin{python}
-from dipy.segment import QuickBundles
+from dipy.segment.quickbundles import QuickBundles
 qb = QuickBundles(streamlines, dist_thr=20.,
                   pts=18)
 \end{python}
@@ -1219,8 +1219,8 @@ interactions with one or several ROIs. There are a few functions in
 first of these functions, \texttt{density\_map}, counts the number of
 streamlines that pass though each voxel and returns the result as an image. In
 all the following examples \texttt{streamlines} is a sequence of streamlines and
-\texttt{affine} is a mapping from voxel coordinate space to the streamline
-point space. In all cases \texttt{affine} can be omitted if the streamlines
+\texttt{affine} is a mapping from voxel coordinates to world coordinates. In all 
+cases \texttt{affine} can be omitted if the streamlines
 are defined in voxel coordinate space.
 \begin{python}
 from dipy.tracking.utils import density_map
@@ -1248,9 +1248,10 @@ function produces a mapping from voxel indices to streamlines, much like targeti
 on every individual voxel, and returns a dictionary of those mappings.
 \begin{python}
 from dipy.tracking.utils import streamline_mapping
-mapping = streamline_mapping(track, affine=affine)
+mapping = streamline_mapping(streamlines, 
+                             affine=affine)
 \end{python}
-Here the \texttt{mapping} is a dictionary where the keys are voxel indices and
+Here \texttt{mapping} is a dictionary where the keys are voxel indices and
 the value associated with each key is a list of all the streamlines that pass though that voxel. For example to get all the
 streamlines that pass though voxel \texttt{(i, j, k)}, we would lookup
 \texttt{mapping[i, j, k]}.
@@ -1260,6 +1261,7 @@ The last function we want to mention in this section in
 based on their endpoints and a label volume which we call \texttt{labels}. This
 label volume should be an image where the intensities of the image map to
 anatomical structures. For example:
+
 \begin{python}
 from dipy.tracking.utils import
                               connectivity_matrix
@@ -1282,7 +1284,7 @@ long as one can compute a linear transformation (\texttt{affine}) between the vo
 
 \subsection{Streamline metrics and statistics}
 
-In Dipy we have implemented many metrics for streamlines. For example,
+In Dipy, we have implemented a plurality of metrics for streamlines. For example,
 perhaps the simplest thing that someone may want to do is to calculate the
 average length and standard deviation of the streamlines generated after the
 fiber tracking procedure. This can be achieved very easily using the \texttt{length}
@@ -1302,19 +1304,15 @@ spline interpolation, \texttt{centre\_of\_mass}, \texttt{mean\_curvature},
 and torsion calculations along a streamline.
 
 \subsection{Visualization}
-Fig.~\ref{Fig:pdf},~\ref{Fig:ten_csa_csd},~\ref{Fig:pretty_streamlines}
+Fig.~\ref{Fig:fornix},~\ref{Fig:dti_metrics}-\ref{Fig:pretty_streamlines},
 are generated by
 our own visualization tools which can be used for most parts of the diffusion
-analysis pipeline. We have developed a minimal, lightweight and up to the point
-% Not sure what 'up to the point' is supposed to mean?
-module which we call
-\texttt{fvtk}, 
-based on the Visualization Toolkit (VTK)[REF]. 
-The main idea is that a window can have one or more renderers.
-A renderer can have none, one or several actors. Examples of actors are a sphere,
-line, point or a complete set of streamlines. You can add actors into a
-renderer and in that way you can visualize the aforementioned objects
-e.g.~sphere, line etc. The windows can
+analysis pipeline. We have developed a minimal and lightweight module which is based on the Visualization Toolkit (VTK) \citep{schroeder:01} and we call
+\texttt{fvtk}. The main idea is that a window can have one or more renderers.
+A renderer can have none, one or more actors. Examples of actors are a sphere,
+line, point or a complete set of streamlines. You can basically add actors in a
+renderer and in that way you can visualize the forementioned objects e.g.
+sphere, line etc. The windows can
 be created by either the \texttt{show} function which creates a visible window
 or the \texttt{record} function which creates a temporary window only for the
 purpose of using it to render the objects and save the frames on disk. The
@@ -1324,10 +1322,11 @@ where we visualize some streamlines with different colors:
 from dipy.viz import fvtk
 renderer = fvtk.ren()
 line_actor = fvtk.streamtube(streamlines,
-                              streamline_colors)
+                             streamline_colors)
 fvtk.add(renderer, line_actor)
 fvtk.show(renderer)
 \end{python}
+The function \texttt{streamtube} was also the one we used to create Fig.~\ref{Fig:fornix} and \ref{Fig:pretty_streamlines}. 
 The most commonly used visualization functions are given in Tab.~\ref{fvtk_table}.
 
 \begin{table}[th] \processtable{List of visualization functions\label{fvtk_table}}
@@ -1342,7 +1341,7 @@ record & save frame or frames \\
 line & creates an actor of one or more streamlines \\
 streamtube & same as line but with streamtubes \\
 point & creates actor of points as small spheres \\
-tensor & actor for tensor ellipsoids vizualization\\
+tensor & actor for tensor ellipsoids visualization\\
 sphere\_funcs & actor for ODF visualization \\
 volume & 3D volume rendering with raycasting \\
 slicer & actor for showing volumetric slices \\
@@ -1352,29 +1351,30 @@ slicer & actor for showing volumetric slices \\
 
 \section{Conclusion}
 
-We have outlined the structure and functionality of the Dipy library
-which provides a toolbox for the analysis of diffusion MRI data. Dipy is
-open source software, written in the Python language, and is part of the Neuroimaging in Python 
-(Nipy \url{nipy.org}), a growing
-community of scientists and developers. 
-In common with the other Nipy projects, Dipy is being developed under the
-umbrella of a single github organization (\url{github.com/nipy}) and the central
-Dipy github repository is managed under this organization
-(\url{github.com/nipy/dipy}).  The community provides support for the use and
-development of these software tools through a mailing list
-(\url{dipy.org/subscribe.html}), and this mailing
-list is also a good place to discuss other Python-/neuroimaging-related issues.
-All these factors 
+In this paper, we have outlined the structure and functionality of the Dipy library,
+which provides a number of simple methods to use for the analysis of diffusion MRI data using the Python
+language. We demonstrated examples of pre-processing, reconstruction, tracking and post-processing,
+showing that Dipy, although a new project, can fill many of the steps needed to do a complete 
+dMRI analysis.
+
+Dipy is free and open source software and it is part of a larger community found in \url{nipy.org}. 
+This is a growing team of scientists and developers focusing on sharing code concerning different modalities
+of brain imaging. In common with the other Nipy projects, Dipy is being developed under the
+umbrella of a single github organization\footnote{\url{http://github.com/nipy}} and the central
+Dipy github repository is managed under this organization\footnote{\url{http://github.com/nipy/dipy}}).
+The community provides support for the use and development of these software tools through 
+the project's mailing list\footnote{\url{http://dipy.org/subscribe.html}}.
+
 Github is widely recognized as a factor in lowering the barriers on
-participation in open-source software development [REF?]. In combination with
+participation in open-source software development. In combination with
 the principles of the Nipy community, this has led to a vibrant and diverse
 developer community. In contrast to many other software projects in
 neuroimaging, Dipy is not based on the work of one lab, or one institution. Though
 many of the contributions are made by a few core contributors, there are many
 contributors to the code-base and the number of contributors has been growing
-dramatically after the April 2013 release of version 0.6 of the software
-~\ref{Fig:gh_stats}, with contributors based in at least 6 different academic
-institutions in 4 countries (Canada, UK, USA, and South-Africa).
+dramatically after the 0.6 which took place on April 2013 ~\ref{Fig:gh_stats}, 
+with contributors based in at least 7 different academic
+institutions in 5 countries (Canada, UK, USA, Italy and South Africa).
 
 \begin{figure}
 \centering{}
@@ -1384,12 +1384,13 @@ institutions in 4 countries (Canada, UK, USA, and South-Africa).
   new contributors have joined the project after the 0.6 release\label{Fig:gh_stats}}
 \end{figure}
 
-An additional major source of support for this community comes in the form of the
-Neurodebian distribution \citep{Halchenko2012}. Neurodebian is a platform for
-maintenance and deployment of software for the analysis of neuroscience data,
-based on free open source software (FOSS) practices. It currenly supports the
-distribution of XXX different software libraries , including many widely used
-software libraries (e.g FSL) and all of the constituents of the nipy community.
+Ultimately, this paper shares with you our excitement of developing Dipy and welcomes 
+you to participate in the project. We strongly hope that more scientists will join 
+Dipy by using the software, giving us feedback so that we can make it better, 
+or even better by sharing their code and joining the developers team. We think that 
+in order to solve the hard problem of brain mapping a wide and open participation is 
+absolutely necessary. 
+
 
 \section*{Acknowledgments}
 One major source of support for this community comes in the form of the Neurodebian
@@ -1404,65 +1405,6 @@ Image Analysis and the Quebec Funds in Nature and Techologie (FQRNT).
 \section*{Disclosure/Conflict-of-Interest Statement}
 There are no conflicts of interest.
 
-% \section{LaTex Formatting}
-
-% This is information for the coauthors of this paper. This section will be removed from the last version of this paper.
-
-% This is to show how graphics (EPS) files are included. We use EPS for
-% speed. The first one is spread across both columns, and the second one
-% is just in a single column:
-
-% \begin{figure*}
-% \centerline{\includegraphics[width=160mm]{Figures/Fig_4_cst_simplification_relabeled_triple.eps}}
-% \caption{This is the figure caption - and a label to refer to it in the text \label{Fig:big_picture}}
-% \end{figure*}
-
-% When we want to refer to this figure we use the label (see Fig.~\ref{Fig:big_picture}).
-
-% \begin{figure}
-% \includegraphics[scale=0.15]{Figures/Fig_11_MDF_arcuate}
-% \centering{}
-% \caption{Color coding shows MDF distances from QB centroid to every
-%   other track in the bundle.\label{Fig:little_picture}}
-% \end{figure}
-
-% Here are some displayed equations (see Eq.~\ref{eq:direct_flip_distance}):
-% \begin{eqnarray}
-%   d_{\textrm{direct}}(s, t) = d(s, t) & = & \frac{1}{K}\sum_{i=1}^{K}|s_{i}-t_{i}|,\nonumber\\
-%   d_{\textrm{flipped}}(s, t) & = & d(s,t^F) = d(s^F,t),\nonumber\\
-%   \textrm{MDF}(s, t) & = & \min(d_{\textrm{direct}}(s, t), d_{\textrm{flipped}}(s, t))\label{eq:direct_flip_distance}.
-% \end{eqnarray}
-
-% Inline mathematics goes like this: $\frac{1}{K}\sum_{i=1}^{K}|s_{i}-t_{i}|$
-
-% Here we have an example of a table (see Table~\ref{Table_1}).
-
-% \begin{table}[th] \processtable{QB centroids performance compared with
-% random subsets\label{Table_1}} {\begin{tabular}{rrrr} %\hline Thresholds &
-% Comparison & Coverage \% (s.d.) & Overlap (s.d.) \\ \hline
-% \multirow{2}{*}{$10$~mm/$10$~mm} & QB Centroids & 99.96 (0.007) & 2.44
-% (0.08)\\ & Random & 90.49 (0.41) & 6.16 (0.55)\\ \hline
-% \multirow{2}{*}{$20$~mm/$20$~mm} & QB Centroids & 99.99 (0.004) & 3.54
-% (0.18)\\ & Random & 95.86 (0.62) & 6.81 (0.93)\\ \hline
-% \end{tabular}}{}
-% \end{table}
-
-% References go like this: in parentheses \citep{Garyfallidis_thesis, Mori1999}, and in running text \citet{Garyfallidis_thesis}.
-
-% And here is an example of how to add some code.
-
-% \begin{python}
-% from dipy.viz import fvtk
-% ren = fvtk.ren()
-% class Test(object):
-%   def __init__(self, a):
-%     pass
-% @parametric
-% def f(x):
-%   return x**2
-% for i in range(10):
-%   print f(i)
-% \end{python}
 
 
 \selectlanguage{british}%
