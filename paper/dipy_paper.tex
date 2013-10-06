@@ -1,5 +1,6 @@
 \documentclass{bioinfo}
 \usepackage{url}
+\usepackage{comment}
 
 \usepackage[british,english]{babel}
 \usepackage{mathpazo}
@@ -760,14 +761,14 @@ are available under the \texttt{dipy.reconst.dti} module. In Fig.~\ref{Fig:dti_m
 
 For those who have acquired DSI data, i.e. data with multiple b-values
 and gradients that span a Cartesian keyhole grid \citep{tuch:02,
-  wedeen-hagmann-etal:05, Garyfallidis_thesis}, Dipy provides currently three
+  wedeen-hagmann-etal:05, Garyfallidis_thesis}, Dipy currently provides three
 different models. The standard \texttt{DiffusionSpectrumModel} can be
 accessed using:
 \begin{python}
 from dipy.reconst.dsi import DiffusionSpectrumModel
 dsi_model = DiffusionSpectrumModel(gtab)
 \end{python}
-It was shown by Wedeen et al. \citep{wedeen-hagmann-etal:05} that the dMRI
+Wedeen et al. \citep{wedeen-hagmann-etal:05} showed that the dMRI
 signal is positive for any type of spin motion without net flux (i.e.~spin
 displacements due to thermal molecular agitation) or other random fluxes such
 as intravoxel incoherent motion. Under this assumption we can replace the
@@ -784,9 +785,9 @@ $P$ using:
 dsi_fit = dsi_model.fit(data)
 dsi_pdf = dsi_fit.pdf()
 \end{python}
-However, this method is recommended only when the dimensions of data are very
+However, we recommend this method only when the dimensions of data are very
 small. This is because the \texttt{dsi\_pdf} is a 6D array with 3 dimensions
-for the voxel positions and 3 for the $\mathbf{q}$ positions. Therefore, for a
+for the voxel positions and 3 for the $\mathbf{q}$ positions. For a
 moderate data set of $150\times150\times90$ where every PDF is
 $35\times35\times35$ we would need about 600GBytes of RAM. As a solution to
 this problem Dipy provides a method which can facilitate traversing through
@@ -797,11 +798,12 @@ for index in ndindex(data.shape[:-1]):
     vox_pdf = dsi_model.fit(dataslice[index]).pdf()
 \end{python}
 % 'dataslice' not defined - perhaps doesn't matter
-With this method we do not need to store all the PDFs at once. If it absolutely
+With this method we do not need to store all the PDFs at once. If it is
 necessary to save all the PDFs then our advice is to create a Numpy memory-map
-which will store the PDF for each voxel as binary file on disk. Memory-mapped
-files are used for accessing small segments of large files on disk, without
-reading the entire file into memory.
+which will store the PDF for each voxel as a binary file on disk while still
+appearing as an array in memory. Memory-mapped files are used for accessing
+small segments of large files on disk, without reading the entire file into
+memory.
 
 Recently, an alternative method for DSI was proposed by
 \citet{canales-rodriguez-etal:10} using a deconvolution technique
@@ -809,7 +811,7 @@ based on a Lucy-Richardson (LR) algorithm of the 3D PDF. The
 deconvolution technique accounts for the truncation of q-space by
 standard DSI and can thus achieve a higher angular resolution for
 resolving crossing fibers. This can be used in exactly the same way as
-with the standard DSI method:
+the standard DSI method:
 \begin{python}
 from dipy.reconst.dsi import
                       DiffusionSpectrumDeconvModel
@@ -842,12 +844,13 @@ where \texttt{sphere} is an object holding the vertices and faces of the
 sphere. Here we used a symmetric sphere with 724 vertices. The
 \texttt{dsi\_odf} is an array of the 724 ODF values corresponding to the
 vertices of the sphere. Note at this point that in order to find the ODF we
-have to first create the diffusion propagator by applying the Fourier transform
+have to first create the diffusion propagator (PDF) by applying the Fourier transform
 on the lattice (see Fig.~\ref{Fig:pdf}). Nonetheless, Dipy, for reasons explained before does not store
 the PDFs as it computes the ODF. \cite{yeh-etal:10} proposed a direct way (GQI) to
 calculate a slightly different ODF using the Cosine transform. GQI is
 available from \texttt{dipy.reconst.gqi.GeneralizedQSamplingModel}. The
-advantage of GQI is that it is much faster to calculate than DSI or DSID.
+advantage of GQI is that it is much faster to calculate than DSI or DSI
+deconvolution.
 
 \begin{figure}
 \includegraphics[scale=0.60]{Figures/pdf_odf_60.eps}
@@ -880,6 +883,7 @@ SH estimation of the diffusion signal \citep{descoteaux-angelino-etal:07,
 \end{equation}
 where $P_{l(j)}$ is the Legendre polynomial of order $l$ corresponding to
 coefficient $j$ and the coefficients have been normalized by the S0
+(non-diffusion weighted)
 image. Hence, the q-ball ODF is a linear transformation of the SH coefficient,
 $c_j$. This technique is called analytical QBI (aQBI), in contrast to the
 original QBI solution, which performs the FRT numerically. It is
@@ -893,14 +897,20 @@ The SH of order $l$
 and phase $m$, $Y_{l}^{m}(\theta, \phi)$, arises from the angular solution to
 Laplace's equation in spherical coordinates and they form an orthonormal basis
 for complex functions defined on the unit sphere. However, in single-shell
-acquisitions, S is real and symmetric. Hence, it is common to define a real and
+acquisitions, S is real and symmetric.
+
+\begin{comment}
+    explain what S is here
+\end{comment}
+
+Hence, it is common to define a real and
 symmetric modified orthonormal SH basis, $Y_{j}$, using only even order terms
 and real/imaginary parts of $Y_{l}^{m}(\theta, \phi)$. Therefore, the measured
 signal S is estimated with a truncated SH series of order $l_{max}$, which has
 $R = (l_{max} +1)( l_{max} +2)/2$ terms. For example, for $l_{max} = 4, 6, 8$,
 and $16$ SH series have $R = 15, 28, 45$, and $153$ coefficients respectively.
 
-In Dipy we have implemented three different Q-ball methods in module
+In Dipy we have implemented three different Q-ball methods in the
 module \texttt{dipy.reconst.shm}: (a)
 \citet{descoteaux-angelino-etal:07}, (b) \citet{aganj-lenglet-etal:10}
 and (c) \citet{tristan-vega-westin-etal:09}. For
@@ -952,36 +962,36 @@ harmonics (SH) framework, the convolution operation is performed as
 follows. For each harmonic order $l$, the SH coefficients of the signal profile
 $S(\theta, \phi)$ and the fODF $F(\theta, \phi)$ are written as vectors
 $\mathbf{s}_l$ and $\mathbf{f}_l$ of length $2l+1$, whereas the rotational
-harmonic coefficients of the convolution kernel R (the response function) are
+harmonic coefficients of the convolution kernel $R$ (the response function) are
 written as a matrix $\mathbf{R}_l$ of size $(2l+ 1)\times(2l+ 1)$. The
 convolution operation then simply consists of one matrix multiplication per
-harmonic order l: $\mathbf{s}_l=\mathbf{R}\cdot\mathbf{f}_l$. The spherical
+harmonic order $l$: $\mathbf{s}_l=\mathbf{R}\cdot\mathbf{f}_l$. The spherical
 deconvolution operation can be performed by simple matrix inversion. However,
 the spherical deconvolution problem is ill-posed and thus severely affected by
 noise \citep{tournier-calamante-etal:04}.
 
 Constrained super-resolved spherical deconvolution (CSD)
-\citet{tournier-calamante-etal:07} give a robust solution to this problem by
+\citet{tournier-calamante-etal:07} gives a robust solution to this problem by
 applying two major constraints on the fitting of the fODF. The first is that it
 applies a non-negativity constraint: fODF values that are smaller than 0 are
 non-physical and are precluded. The other is that CSD assumes that only a few of
 the fODF values will be large. Applying these two constraints allows fitting the
-SH basis up to very high orders, in essence fitting more parameters than data
-allow.
+SH basis up to very high orders, in essence fitting more parameters than the data
+allows.
 This super-resolved method can be accessed in Dipy using:
 \begin{python}
 from dipy.reconst.csdeconv import
         ConstrainedSphericalDeconvModel as CsdModel
 csd_model = CsdModel(gtab, response)
 \end{python}
-The main choice to be considered is the estimation of the single fiber response
+The main choice to consider is the estimation of the single fiber response
 function.  We assume that $R$ is derived from a prolate tensor, where
 the single-tensor model is accurate. The eigenvalues
 of this tensor are estimated from the voxels with FA $> 0.7$. The input
 parameter \texttt{response} is a tuple with two parameters: a) the eigen-values
 of the tensor and b) the estimated average S0 signal for those voxels. The
 response function is usually estimated from the corpus callosum areas. For
-further information on how to initialize the CSD please read our examples in
+further information on how to initialize the CSD please read our examples at
 \texttt{dipy.org}.
 
 Dipy also implements a second constrained spherical deconvolution method: The
@@ -989,7 +999,7 @@ Spherical Deconvolution Transform (SDT)
 \citep{descoteaux-deriche-etal:09}, which is a sharpening
 operation that can transform the smooth diffusion ODF into a sharper
 fiber ODF. The method is
-inspired by CSD \cite{tournier-calamante-etal:07} with, the main difference
+inspired by CSD \cite{tournier-calamante-etal:07} with the main difference
 that the CSD is applied directly to the initial signal and the SDT directly to
 the ODF \citep{descoteaux:08,descoteaux-deriche-etal:09}.
 
@@ -999,8 +1009,9 @@ from dipy.reconst.csdeconv import
                   ConstrainedSDTModel as SdtModel
 sdt_model = SdtModel(gtab, ratio)
 \end{python}
-Here the response function is provided as a scalar parameter, the ratio of the
-smallest eigenvalue over the largest eigenvalue. Both spherical deconvolution
+Here the response function is provided as a scalar parameter \texttt{ratio},
+which is the ratio of the
+smallest eigenvalue to the largest eigenvalue. Both spherical deconvolution
 methods perform similarly as shown in
 \citep{descoteaux-deriche-etal:09,GaryfallidisISBI2013a}.
 
@@ -1021,14 +1032,14 @@ corticospinal tract and the superior longitudinal fasciculus.
 \subsection{Peaks from models}
 In the previous sections we showed that the reconstruction models have a
 uniform API and can be called in similar ways. For example, they all have an
-odf() method. This design gives us the opportunity to create utility functions
+\texttt{odf()} method. This design gives us the opportunity to create utility functions
 where the model is one of the parameters. \texttt{peaks\_from\_model} is a
 multipurpose function which can be used to (a) find the maxima (peaks) of the
-ODFs, (b) find the directions of the maxima in the ODFs which can be useful for
-tracking, (c) discretize those directions on the unit sphere for efficiency, (d)
+ODFs, (b) find the directions of the maxima in the ODFs (which can be useful for
+tracking), (c) discretize those directions on the unit sphere for efficiency, (d)
 compress the ODFs as spherical harmonics to reduce memory usage and (e)
-calculate many metrics simultaneously, e.g. generalized fractional anisotropy
-(GFA) \citep{tuch:04}, without the need of creating all ODFs at
+calculate many metrics simultaneously --- e.g. generalized fractional anisotropy
+(GFA) \citep{tuch:04} --- without the need to create all ODFs at
 once. \texttt{peaks\_from\_model} can be called as:
 \begin{python}
 from dipy.reconst.odf import peaks_from_model
@@ -1044,8 +1055,8 @@ gfa = pmd.gfa
 \end{python}
 The model parameter can be set to any of the models discussed in the previous sections
 e.g. \texttt{dsi\_model}. The \texttt{relative\_peak\_threshold} parameter
-enforces that only peaks greater than \texttt{relative\_peak\_threshold}$*m$
-will be returned, where $m$ is the value of the largest
+specifies that only peaks greater than \texttt{relative\_peak\_threshold}$*m$
+should be returned, where $m$ is the value of the largest
 peak. \texttt{min\_separation\_angle} sets the threshold for the minimum
 angular distance in degrees between two peaks. If the peaks are closer than
 this threshold only the larger of the two is returned. These two parameters help
@@ -1056,8 +1067,7 @@ which holds all the different output arrays, \texttt{peak\_values},
 \citep{yeh-etal:10}, \texttt{odf} and \texttt{shm\_coeff}.
 
 If the parameter \texttt{return\_sh} is set to True then the ODFs will be
-represented by their SH expansion. This serves as a strategy to decrease
-memory usage, as the SH coefficients need much less memory than the ODF represented
+represented by their SH expansion. This reduces memory usage, as the SH coefficients need much less memory than the ODF represented
 on the sphere. If we want to calculate the ODF back from the SH coefficients we
 can use the function \texttt{sh\_to\_sf}:
 \begin{python}
@@ -1080,9 +1090,14 @@ neuroscience. This premise has led to major investment in data-collection
 projects aimed at characterizing the connectome, based on dMRI, as well as
 functional MRI (fMRI) measurements \citep{VanEssen2013}.
 
-Tracking algorithms, used to infer these connections divide into two major
-classes. The first class is deterministic. It uses the information about the
-directions of diffusion. Some of the early deterministic algorithms used the
+Tracking algorithms used to infer these connections divide into two major
+classes. The first class is deterministic. Deterministic tracts follows a
+predictable path through the data, by selecting at each point a single diffusion
+direction to follow.  There may be several estimated track directions at each
+point (such as a voxel center), but deterministic selects one of these estimated
+directions on some criterion such as closeness of match to the previous
+direction of the track.
+Some of the early deterministic algorithms used the
 primary diffusion direction of the diffusion tensor model as an indication of the direction
 of the major fiber population in every voxel and track along the streamlines
 that are implied by these principal diffusion directions \citep{Mori1999,
@@ -1091,11 +1106,14 @@ now widely recognized that in regions of crossing fibers, the primary diffusion
 direction may not coincide with the direction of any of the local fiber
 populations. More modern algorithms (see below) take this into account.
 
-The other class of algorithms is probabilistic, in that they consider the local
+The second major class of tractography algorithms is probabilistic. These
+methods consider the local
 information in each voxel to represent a distribution of possible directions in
 that location. In these algorithms, a trajectory of fibers in every location is
-randomly sampled from the local distribution. The algorithm may therefore give
-different sets of streamlines on different realizations.
+randomly sampled from the local distribution. Any given track in a probabilistic
+tractography is therefore one random sample of many possible tracks.  The
+algorithm may therefore give different sets of streamlines on different
+realizations.
 
 Dipy implements both deterministic and probabilistic tracking algorithms,
 described in detail below.
@@ -1104,20 +1122,20 @@ described in detail below.
 Euler Delta Crossings \citep{Garyfallidis_thesis}, or \emph{EuDX} for short, was the first tracking
 method to be implemented in Dipy. We created an algorithm that has many
 similarities with the classical deterministic methods~\citep{Mori1999,
-  conturo-lori-etal:99, basser-pajevic-etal:00} and with more recent ones as
+  conturo-lori-etal:99, basser-pajevic-etal:00} and with more recent ones such as
 those described in \citet{descoteaux-deriche-etal:09} and
 \citet{yeh-etal:10}. Our focus was on creating a simple
 deterministic algorithm which can be used with very different families of
 reconstruction models, work well in crossing areas and be efficient so that it
-can be used to quickly inspect the reconstruction results. EuDX is applied
-usually in native space image coordinates and it assumes that all three voxel
-dimensions are equal. If the raw data does not have
+can be used to quickly inspect the reconstruction results. EuDX is usually applied
+in native space image coordinates and it assumes that voxels are of equal size
+in all three image axes (isotropic voxel size). If the raw data does not have
 isotropic voxel size then a reslicing preprocessing step is
 required to make the data isotropic.
 
 In order to create streamlines, we initially need to provide one or more seed
-points $\mathbf{s}$. The points from where the streamlines will start growing. These can
-be chosen randomly or they can be specified explicitly. However, these seed
+points $\mathbf{s}$. The seed points are the points from which the streamlines will start growing. These can
+be chosen randomly or they can be specified explicitly. However, the seed
 points need to be constrained by the volume's dimensions. Every seed point
 $\mathbf{p}_{0}$ becomes the starting point for the track propagation. For the
 integration we solve for
@@ -1126,10 +1144,10 @@ and we perform the integration numerically using Euler's method
 \begin{equation}
 \mathbf{p}_{n+1}=\mathbf{p}_{n}+\mathbf{v}(\mathbf{p}_{n})\Delta s\label{eq:euler}
 \end{equation}
-\noindent where $\Delta s$ is the propagation step size which should be no
-greater than the voxel size, and $\mathbf{v}$ is the propagation
-direction. Furthermore, EuDX uses trilinear interpolation for the calculation
-of the next direction integrating directional information from the surrounding
+\noindent where $\Delta s$ is the propagation step size (which should be no
+greater than the voxel size), and $\mathbf{v}$ is the propagation
+direction. EuDX uses trilinear interpolation for the calculation
+of the next direction, integrating directional information from the surrounding
 voxels.
 
 The first parameter of EuDX can be an array of dimensions $X\times Y\times Z$
@@ -1139,7 +1157,7 @@ propagation if the value in the current voxel is lower than
 \texttt{a\_low}. For efficiency, the peak directions are discretized on a unit
 sphere. For this purpose, the second parameter is another array of dimensions
 $X\times Y\times Z$ or $X\times Y\times Z\times W$ but this time these are the
-indices of the directions approximated on the sphere. An example is given here
+indices of the directions approximated on the sphere. Here we give an example
 where we have used the \texttt{peak\_indices} from CSD using \texttt{peaks\_from\_models}
 and the tensor FA for stopping criteria (with threshold 0.1):
 \begin{python}
@@ -1155,7 +1173,7 @@ advantage that it allows us to seed from specific ROIs or from the gray matter
 - white matter boundary which has been shown to generate more robust tracking
 results \citep{Cote2013tractometer}. The instance of EuDX returns an
 iterator. In every call of the iterator a new streamline is returned. This
-technique allows one to save streamlines directly to disk without loading all
+technique allows one to generate and save streamlines directly to disk without loading all
 streamlines in memory. In Fig.~\ref{Fig:pretty_streamlines} a few thousand
 human brain streamlines are shown, approximating the brain's white matter connections,
 generated from EuDX. In contrast, in Fig.~\ref{Fig:fornix} only a specific anatomical bundle is
@@ -1193,7 +1211,7 @@ data can be used as an estimate of the PDF, because it represents a fiber distri
 associated with the measured diffusion signal \citep{jeurissen2011probabilistic}. The user must
 also provide a set of seeds to track from, and set the stopping criteria. Currently a white matter mask and maximum turning angle are used as stopping criteria.
 
-The second interface for probabilistic tracking is meant to accommodate	tracking
+The second interface for probabilistic tracking is meant to accommodate tracking
 methods where the fODF cannot be easily computed. It is often much easier and less
 computationally expensive to sample from a PDF than it is to evaluate the PDF. For
 example, residual bootstrap fiber tracking methods fall into this category \citep{berman2008probabilistic}.
@@ -1215,7 +1233,7 @@ and interpret. As a solution to this problem Dipy implements a recent
 efficient clustering algorithm for streamlines called QuickBundles (QB)
 \citep{Garyfallidis_thesis,garyfallidis-etal:12}. QB can be used to
 simplify large datasets in a couple of minutes.
-When using QB we need first to instantiate the object with 3
+When using QB we need first to instantiate the \texttt{QuickBundles} object with 3
 parameters. The first parameter is the initial set of streamlines to be
 clustered, the second is the distance threshold that will determine the number of clusters and their sizes,
 and the third is the level of detail for each streamline. For example, in the
@@ -1231,12 +1249,13 @@ qb = QuickBundles(streamlines, dist_thr=30.,
 After we have created the instance of the object, attributes like
 \texttt{qb.centroids} provide the clusters' centroids and methods like
 \texttt{qb.label2tracks()} can return the streamlines which belong to a
-specific cluster. An example of QuickBundles, applied on a human brain dataset described in \citep{Fortin2012}, using the same parameters as shown
-in the code listing above, is shown in Fig.~\ref{Fig:pretty_streamlines}.
+specific cluster. Fig.~\ref{Fig:pretty_streamlines} shows an example of
+QuickBundles applied on the human brain dataset described in \citep{Fortin2012},
+using the same parameters shown in the code listing above.
 
-\subsection{ROIs - streamlines intersections}
+\subsection{ROIs - streamline intersections}
 
-It if often useful in dMRI to filter, group or count streamlines based on their
+It is often useful in dMRI to filter, group or count streamlines based on their
 interactions with one or several ROIs \citep{Cote2013tractometer}. There are a few functions in
 \texttt{dipy.tracking.utils} to make these kinds of operations easier. The
 first of these functions, \texttt{density\_map}, counts the number of
@@ -1264,9 +1283,9 @@ bundle = target(streamlines, roi, affine=affine)
 \end{python}
 Here \texttt{roi} is a binary array, and \texttt{bundle} is generator of
 streamlines.  Only the streamlines that pass though at least
-one of the voxel in \texttt{roi} with value 1 will be in \texttt{bundle}.
+one of the voxels in \texttt{roi} that have value 1, will be in \texttt{bundle}.
 
-A function related to \texttt{target} is \texttt{streamline\_mapping}. This
+\texttt{streamline\_mapping} is a function related to \texttt{target}. This
 function produces a mapping from voxel indices to streamlines, much like targeting
 on every individual voxel, and returns a dictionary of those mappings.
 \begin{python}
@@ -1276,10 +1295,10 @@ mapping = streamline_mapping(streamlines,
 \end{python}
 Here \texttt{mapping} is a dictionary where the keys are voxel indices and
 the value associated with each key is a list of all the streamlines that pass though that voxel. For example to get all the
-streamlines that pass though voxel \texttt{(i, j, k)}, we would lookup
+streamlines that pass though voxel \texttt{(i, j, k)}, we would look up
 \texttt{mapping[i, j, k]}.
 
-The last function we want to mention in this section in
+The last function we want to mention in this section is
 \texttt{connectivity\_matrix}. This function groups and counts streamlines
 based on their endpoints and a label volume which we call \texttt{labels}. This
 label volume should be an image where the intensities of the image map to
@@ -1294,13 +1313,13 @@ M, M_sl = connectivity_matrix(streamlines, labels,
                               return_mapping=True)
 \end{python}
 
-Here because we've made the matrix symmetric, \texttt{M[i, j] = M[j, i]} is the number of streamlines that connect region \texttt{i} to \texttt{j}
-or \texttt{j} to \texttt{i}. Similarly because we've set
+Here because we have made the matrix symmetric, \texttt{M[i, j] = M[j, i]} is the number of streamlines that connect region \texttt{i} to \texttt{j}
+or \texttt{j} to \texttt{i}. Similarly because we have set
 \texttt{return\_mapping=True}, we can get a list of all those streamlines by
 looking up \texttt{M\_sl[i, j]}.
 
 While it is common to apply these kinds of operations in native voxel space of
-the diffusion MRI images used to create the streamlines, this is not a
+the diffusion MRI images used to create the streamlines, this is not
 required. It is often useful to interact with streamlines in the voxel space of
 a high resolution structural image of the same patient. This is possible as
 long as one can compute a linear transformation (\texttt{affine}) between the voxel coordinates and the streamline point coordinates.
@@ -1323,18 +1342,20 @@ standard_deviation_lengths = lengths.std()
 \end{python}
 Many other metrics can be found in the metrics sub-module e.g.~\texttt{spline} for
 spline interpolation, \texttt{centre\_of\_mass}, \texttt{mean\_curvature},
-\texttt{mean\_orientation} and the \texttt{frenet\_ serret} framework for curvature
+\texttt{mean\_orientation} and the \texttt{frenet\_serret} framework for curvature
 and torsion calculations along a streamline.
 
 \subsection{Visualization}
-Fig.~\ref{Fig:fornix},~\ref{Fig:dti_metrics}-\ref{Fig:pretty_streamlines},
+Figs.~\ref{Fig:fornix},~\ref{Fig:dti_metrics}-\ref{Fig:pretty_streamlines},
 are generated by
 our own visualization tools which can be used for most parts of the diffusion
-analysis pipeline. We have developed a minimal and lightweight module which is based on the Visualization Toolkit (VTK) \citep{schroeder:01} and we call
-\texttt{fvtk}. The main idea is that a window can have one or more renderers.
+analysis pipeline. We have developed a minimal and lightweight module called
+\texttt{fvtk} which is based on the Visualization Toolkit (VTK)
+\citep{schroeder:01}. The main idea is that a window can have one or more
+renderers.
 A renderer can have none, one or more actors. Examples of actors are a sphere,
-line, point or a complete set of streamlines. You can basically add actors in a
-renderer and in that way you can visualize the forementioned objects e.g.
+line, point or a complete set of streamlines. You can add actors in a
+renderer and in that way you can visualize the aforementioned objects e.g.
 sphere, line etc. The windows can
 be created by either the \texttt{show} function which creates a visible window
 or the \texttt{record} function which creates a temporary window only for the
@@ -1374,14 +1395,14 @@ slicer & actor for showing volumetric slices \\
 
 \section{Discussion and Conclusion}
 
-In this paper, we have outlined the structure and functionality of the Dipy library,
-which provides a number of simple-to-use methods for the analysis of diffusion MRI data using the Python
+We have outlined the structure and functionality of the Dipy library.  Dipy
+provides a number of simple-to-use methods for the analysis of diffusion MRI data using the Python
 language. We demonstrated examples of pre-processing, reconstruction, tracking and post-processing,
 showing that Dipy, although a relatively new project, can fill many of the steps needed to do a complete
 dMRI analysis. We have illustrated the scope of the methods that have been implemented to date, and have
 demonstrated these capabilities of Dipy with sample scripts and visualizations.
 
-Dipy is free and open source software and it is part of a larger community found in \url{nipy.org}.
+Dipy is free and open source software and it is part of a larger community found at \url{nipy.org}.
 This is a growing team of scientists and developers focusing on sharing code for different modalities
 of brain imaging. In common with the other Nipy projects, Dipy is being developed under the
 umbrella of a single GitHub organization\footnote{\url{http://github.com/nipy}} and the central
@@ -1396,15 +1417,16 @@ developer community. In contrast to many other software projects in
 neuroimaging, Dipy is not based on the work of one lab, or one institution. Though
 many of the contributions are made by a few core contributors, there are many
 contributors to the code-base and the number of contributors has been growing
-dramatically after the 0.6 which took place on April 2013 (see Fig.~\ref{Fig:gh_stats}),
-with contributors based in at least seven different academic
+dramatically after the release of dipy 0.6 which took place on April 2013 (see
+Fig.~\ref{Fig:gh_stats}).
+Dipy contributors come from at least seven different academic
 institutions in five countries (Canada, UK, USA, Italy and South Africa).
 
 \begin{figure}
 \centering{}
 \includegraphics[scale=0.37]{Figures/fig-gh.eps}
 \caption{Participation in the Dipy GitHub repository. The cumulative number of
-  unique contributors has been extracted from the git log command and tallied. Many
+  unique contributors has been extracted using the git log command and tallied. Many
   new contributors have joined the project after the 0.6 release \label{Fig:gh_stats}}
 \end{figure}
 
