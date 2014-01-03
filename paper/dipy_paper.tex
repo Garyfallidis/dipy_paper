@@ -271,9 +271,9 @@ imaging research. We aim to build software that is clearly written, well
 explained and thoroughly tested, while being a good fit for the underlying ideas
 and providing a natural meeting point for collaboration.
 
-We designed dipy to be an international project that welcomes contributions from
+We designed Dipy to be an international project that welcomes contributions from
 anywhere in the world. As for many other projects, we suffer from the tension
-between our desire to encourage new code and our need to keep dipy well tested
+between our desire to encourage new code and our need to keep Dipy well tested
 and well maintained, so that we and others can continue to use it and use it to
 build new things. To keep code quality high and help each other understand the
 new code, we use public code review.  Each contribution, from any author, first
@@ -389,12 +389,12 @@ techniques from more experienced developers.
 
 To assist developers, Dipy uses the Travis continuous integration system.  Any
 time a new PR is proposed, Travis receives an automated signal to commission a
-new virtual machine to run the tests.  A file in the dipy repository tells
+new virtual machine to run the tests.  A file in the Dipy repository tells
 Travis how to install the necessary dependencies, build a clean copy of
 Dipy, and runs Dipy's test suite against the new changes.  Travis integrates
 with GitHub to post the results back to the pull request interface. This means
 that we can be check any new code for errors, and make sure that code included
-into dipy passes all the tests. After the code reaches the main development
+into Dipy passes all the tests. After the code reaches the main development
 branch of dipy, we run more comprehensive tests on all our supported
 platforms using a \texttt{buildbot}\footnote{\url{buildbot.net}} system hosted at
 \url{nipy.bic.berkeley.edu}. This gives us early warning of any problems on
@@ -682,7 +682,7 @@ behavioral \citep{Ben-Shachar2007} and clinical \citep{Thomason2011} measures
 can be predicted based on these statistics, suggesting that they are reporting
 on meaningful variability in brain structure.
 
-It is straightforward to use dipy to fit the tensor model and compute univariate
+It is straightforward to use Dipy to fit the tensor model and compute univariate
 statistics from it.  In the following example, we show how to fit the tensor
 model to data and how to compute univariate measures.
 
@@ -697,8 +697,8 @@ ten_model = TensorModel(gtab)
 The code above sets up the analysis.  Since
 the analysis of every voxel in the brain will rely on similar infra-structure,
 the \texttt{TensorModel} class instance only sets up the skeleton for the
-analysis. This same skeleton will be reused for each one of the voxels in the
-data here, but can also be reused for other data in a similar fashion.  To run
+analysis. The same skeleton will be used for every voxel in the
+data here, but can also be used with new data in a similar fashion.  To run
 the analysis,
 we pass the data to the fit method of the \texttt{tensor\_model}. This returns
 a \texttt{TensorFit} class instance which relates to the specific data and
@@ -722,8 +722,7 @@ color FA (see Fig.~\ref{Fig:dti_metrics}):
 from dipy.reconst.dti import color_fa
 cfa = color_fa(fa, tenfit.evecs)
 \end{python}
-Finally, a couple more points about the implementation of DTI. The first is that
-There is still ongoing research on fitting methods for the tensor model
+Finally, a couple more points about the implementation of DTI. The first is that there is still ongoing research on fitting methods for the tensor model
 \citep{Koay2006}. Several different methods have been implemented, including
 non-linear least-squares, ordinary least-squares and weighted least-squares
 fitting \citep{chung-lu-etal:06} as well as Riemannian modeling-based
@@ -734,7 +733,7 @@ methods to robustly fit the tensor model, in the face of noisy data
 \citep{Chang2005, Chang2012}. For this purpose, an implementation of a robust
 tensor fitting algorithm (RESTORE) is also available in Dipy.
 
-Note also that dipy implements many more univariate measures. Not
+Note also that Dipy implements many more univariate measures. Not
 only can users compute FA, MD, DEC, but also other statistics that have been
 proposed in the literature, such as the diffusion linearity, planarity and
 sphericity \citep{westin:97}, as well as the tensor mode, tensor norm
@@ -1401,7 +1400,7 @@ developer community. In contrast to many other software projects in
 neuroimaging, Dipy is not based on the work of one lab, or one institution. Though
 many of the contributions are made by a few core contributors, there are many
 contributors to the code-base and the number of contributors has been growing
-dramatically after the release of dipy 0.6 which took place on April 2013 (see
+dramatically after the release of Dipy 0.6 which took place on April 2013 (see
 Fig.~\ref{Fig:gh_stats}).
 Dipy contributors come from at least seven different academic
 institutions in five countries (Canada, UK, USA, Italy and South Africa).
