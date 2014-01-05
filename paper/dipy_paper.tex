@@ -1302,6 +1302,19 @@ or \texttt{j} to \texttt{i}. Similarly because we have set
 \texttt{return\_mapping=True}, we can get a list of all those streamlines by
 looking up \texttt{M\_sl[i, j]}.
 
+An example of using \texttt{target} and \texttt{connectivity\_matrix} is shown in Fig.~\ref{Fig:connectivity}. In the left panel we can see the streamlines found to intersect with the yellow mask in the corpus callosum (CC) using \texttt{target}. Then we used these streamlines to investigate which areas of
+the cortex are connected using a modified label map `aparc+aseg.mgz` created by freesurfer{REF} of 89 regions. For a complete example of how we created this figure we recommend reading the online tutorial on the topic from dipy.org/examples_index.html
+
+\begin{figure*}[!htb]
+\includegraphics[scale=0.9]{Figures/connectivity_cc.jpg}
+\centering{}
+\caption{Left: Streamlines intersecting a mask in the corpus callosum (CC).
+  Middle: the mask (yellow). Right: connectivity matrix of the CC streamlines that connect 89 cortical regions.
+  \label{Fig:connectivity}}
+\end{figure*}
+
+
+
 While it is common to apply these kinds of operations in native voxel space of
 the diffusion MRI images used to create the streamlines, this is not
 required. It is often useful to interact with streamlines in the voxel space of
