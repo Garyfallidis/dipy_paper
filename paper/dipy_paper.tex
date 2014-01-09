@@ -277,7 +277,7 @@ between our desire to encourage new code and our need to keep Dipy well tested
 and well maintained, so that we and others can continue to use it and use it to
 build new things. To keep code quality high and help each other understand the
 new code, we use public code review.  Each contribution, from any author, first
-gets proposed on the public website\footnote{\url{github.com/dipy/dipy}}. The code can
+gets proposed on the public website\footnote{\url{http://github.com/nipy/dipy}}. The code can
 be merged after everyone has had a chance to comment and ask questions.  The
 same system allows the code to be tested automatically for test errors.
 
@@ -396,7 +396,7 @@ with GitHub to post the results back to the pull request interface. This means
 that we can be check any new code for errors, and make sure that code included
 into Dipy passes all the tests. After the code reaches the main development
 branch of dipy, we run more comprehensive tests on all our supported
-platforms using a \texttt{buildbot}\footnote{\url{buildbot.net}} system hosted at
+platforms using a \texttt{buildbot}\footnote{\url{http://buildbot.net}} system hosted at
 \url{nipy.bic.berkeley.edu}. This gives us early warning of any problems on
 platforms such as Windows or OSX.  Dipy also follows a test-driven development
 philosophy, whereby all code should be accompanied by a suite of tests to
@@ -1303,16 +1303,14 @@ or \texttt{j} to \texttt{i}. Similarly because we have set
 looking up \texttt{M\_sl[i, j]}.
 
 An example of using \texttt{target} and \texttt{connectivity\_matrix} is shown in Fig.~\ref{Fig:connectivity}. In the left panel we can see the streamlines found to intersect with the yellow mask in the corpus callosum (CC) using \texttt{target}. Then we used these streamlines to investigate which areas of
-the cortex are connected using a modified label map `aparc+aseg.mgz` created by freesurfer{REF} of 89 regions. For a complete example of how we created this figure we recommend reading the online tutorial on the topic from dipy.org/examples\_index.html
+the cortex are connected using a modified  \texttt{aparc+aseg.mgz} label map created by FreeSurfer \citep{fischl-freesurfer:12} of 89 regions. For a complete example of how you can create your own connectivity matrices we recommend reading the online tutorial on the topic from Dipy's website \footnote{\url{http://dipy.org/examples\_index.html}}.
 
 \begin{figure*}[!htb]
 \includegraphics[scale=0.9]{Figures/connectivity_cc.jpg}
 \centering{}
 \caption{Left: Streamlines intersecting a mask in the corpus callosum (CC).
-  Middle: the mask (yellow). Right: connectivity matrix of the CC streamlines that connect 89 cortical regions.
-  \label{Fig:connectivity}}
+  Middle: the mask (yellow). Right: connectivity matrix of the CC streamlines that connect 89 cortical regions. A detailed tutorial is available at Dipy's website. \label{Fig:connectivity}}
 \end{figure*}
-
 
 
 While it is common to apply these kinds of operations in native voxel space of
