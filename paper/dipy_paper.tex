@@ -367,15 +367,13 @@ Dipy is built on the Scipy tool stack, which includes packages such as
 Numpy (numerical arrays and array computation), Scipy
 (scientific libraries, e.g. optimization, triangulation, special functions,
 and more) and Cython (an optimized Python to C compiler, used to achieve
-C-level code performance).  Furthermore, it integrates into the Nipy
-(neuroimaging in Python) ecosystem of software (see
-Fig.~\ref{Fig:module_structure}).
+C-level code performance).  Furthermore, Dipy is one of the major components of the Nipy (Neuroimaging in Python) ecosystem of medical imaging software (see
+Fig.~\ref{Fig:module_structure}). Dipy also interacts effortlessly with other Nipy projects. For example, Nipype citep{XXX} has Dipy interfaces which allow building scalable dMRI workflows.
 
 Dipy's API is designed to be intuitive, simple to use, and well
 documented.  This allows researchers to build fairly simple Python analysis
 scripts that can build complex computational experiments while still being easy
-to read.  In addition, since the code is entirely free and open, Dipy is ideally
-suited to facilitate reproducible research \citep{Donoho2010}.
+to read.  In addition, since the code is entirely free and open, Dipy is ideally suited to facilitate reproducible research \citep{Donoho2010}.
 
 Like many modern open source projects, Dipy is hosted on GitHub --- an online
 repository that hosts open-source software, using the Git source-code
@@ -422,7 +420,7 @@ streamlines. \emph{Sims} is focused on creating synthetic simulations.
 on segmentation of images and clustering of streamlines.
 
 \begin{figure}
-\includegraphics[scale=0.42]{Figures/module_structure2.jpg}
+\includegraphics[scale=0.44]{Figures/module_structure2.jpg}
 \centering{}
 \caption{Dipy is one of the main projects of the Nipy community and depends strongly
 on Numpy, Scipy and Cython. This diagram further shows the major Dipy sub-modules.\label{Fig:module_structure}}
