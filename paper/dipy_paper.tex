@@ -368,7 +368,7 @@ Numpy (numerical arrays and array computation), Scipy
 (scientific libraries, e.g. optimization, triangulation, special functions,
 and more) and Cython (an optimized Python to C compiler, used to achieve
 C-level code performance).  Furthermore, Dipy is one of the major components of the Nipy (Neuroimaging in Python) ecosystem of medical imaging software (see
-Fig.~\ref{Fig:module_structure}). Dipy also interacts effortlessly with other Nipy projects. For example, Nipype citep{XXX} has Dipy interfaces which allow building scalable dMRI workflows.
+Fig.~\ref{Fig:module_structure}). Dipy also interacts effortlessly with other Nipy projects. For example, Nipype \citep{gorgolewski2011nipype} has Dipy interfaces which allow building scalable dMRI workflows.
 
 Dipy's API is designed to be intuitive, simple to use, and well
 documented.  This allows researchers to build fairly simple Python analysis
@@ -1394,10 +1394,10 @@ showing that Dipy, although a relatively new project, can fill many of the steps
 dMRI analysis. We have illustrated the scope of the methods that have been implemented to date, and have
 demonstrated these capabilities of Dipy with sample scripts and visualizations.
 
-For the future, we are hoping to introduce new methods which are not currently implemented. Here are some hints about the areas that we are currently working on. For the pre-processing denoising and eddy-current correction of the raw dMRI data. For group analysis we are implementing novel warping algorithms. We have also started moving into tissue characterization and microstructure ref[XXX]. For the reconstruction we have already a first implementation of SHORE ref[XXX] which we are currently enhancing with more features and for tracking we are looking into building a more general and adaptive interface.
+For the future, we are hoping to introduce new methods which are not currently implemented. Here are some hints about the areas that we are currently working on. For the pre-processing denoising and eddy-current correction of the raw dMRI data. For group analysis we are implementing novel warping algorithms. We have also started looking into tissue characterization in microstructure \citep{assaf-blumenfeld-etal:08}. For the reconstruction we have already a first implementation of SHORE \citep{ozarslan2013mean} which we are currently enhancing with more features and for tracking we are looking into building a more general and adaptive interface.
 
-As the size of the datasets in laboratories and hospitals around the world keeps increasing it is very important to use parallel processing to reduce the duration of analysis. For this purpose we have already implemented a parallel execution for the reconstruction step which is usually a bottleneck for the analysis. This is enabled through \texttt{peaks\_from\_model} by setting the parameter \texttt{parallel=True}. Nonetheless, we are working on parallelizing other bottlenecks of the pipeline either by using multi-processing or OpenMP through Cython. Of course, for those who are interested in computing every
-subject in parallel e.g. in a cluster or in a multi-core computer this is very easy to do with Python and Dipy and there are many tools which can facilitate this e.g. IPython, Nipype etc ref[XXX].
+As the size of the datasets in laboratories and hospitals around the world keeps increasing it is very important to use parallel processing to reduce the duration of analysis. For this purpose we have already implemented a parallel execution for the reconstruction step which is usually a bottleneck of the overall dMRI analysis. This is enabled through \texttt{peaks\_from\_model} by setting the parameter \texttt{parallel=True}. Nonetheless, we are working on parallelizing other bottlenecks of the pipeline either by using multi-processing or OpenMP through Cython. Of course, for those who are interested in computing every
+subject in parallel e.g. in a cluster or in a multi-core computer this is very easy to do with Python and Dipy and there are many tools which can facilitate this e.g. IPython, Nipype and others.
 
 Dipy is free and open source software and it is part of a larger community found at \url{nipy.org}.
 This is a growing team of scientists and developers focusing on sharing code for different modalities
