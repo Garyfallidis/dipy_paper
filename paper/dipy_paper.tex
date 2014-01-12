@@ -1300,6 +1300,12 @@ or \texttt{j} to \texttt{i}. Similarly because we have set
 \texttt{return\_mapping=True}, we can get a list of all those streamlines by
 looking up \texttt{M\_sl[i, j]}.
 
+While it is common to apply these kinds of operations in native voxel space of
+the diffusion MRI images used to create the streamlines, this is not
+required. It is often useful to interact with streamlines in the voxel space of
+a high resolution structural image of the same patient. This is possible as
+long as one can compute a linear transformation (\texttt{affine}) between the voxel coordinates and the streamline point coordinates.
+
 An example of using \texttt{target} and \texttt{connectivity\_matrix} is shown in Fig.~\ref{Fig:connectivity}. In the left panel we can see the streamlines found to intersect with the yellow mask in the corpus callosum (CC) using \texttt{target}. Then we used these streamlines to investigate which areas of
 the cortex are connected using a modified  \texttt{aparc+aseg.mgz} label map created by FreeSurfer \citep{fischl-freesurfer:12} of 89 regions. For a complete example of how you can create your own connectivity matrices we recommend reading the online tutorial on the topic from Dipy's website \footnote{\url{http://dipy.org/examples\_index.html}}.
 
@@ -1307,15 +1313,8 @@ the cortex are connected using a modified  \texttt{aparc+aseg.mgz} label map cre
 \includegraphics[scale=0.9]{Figures/connectivity_cc.jpg}
 \centering{}
 \caption{Left: Streamlines intersecting a mask in the corpus callosum (CC).
-  Middle: the mask (yellow). Right: connectivity matrix of the CC streamlines that connect 89 cortical regions. A detailed tutorial is available at Dipy's website. \label{Fig:connectivity}}
+  Middle: Showing the streamlines with semi-transparency to make possible to see the mask (yellow color). Right: connectivity matrix of the CC streamlines that connect 89 cortical regions. A detailed tutorial is available at Dipy's website. \label{Fig:connectivity}}
 \end{figure*}
-
-
-While it is common to apply these kinds of operations in native voxel space of
-the diffusion MRI images used to create the streamlines, this is not
-required. It is often useful to interact with streamlines in the voxel space of
-a high resolution structural image of the same patient. This is possible as
-long as one can compute a linear transformation (\texttt{affine}) between the voxel coordinates and the streamline point coordinates.
 
 \subsection{Streamline metrics and statistics}
 
@@ -1394,7 +1393,7 @@ showing that Dipy, although a relatively new project, can fill many of the steps
 dMRI analysis. We have illustrated the scope of the methods that have been implemented to date, and have
 demonstrated these capabilities of Dipy with sample scripts and visualizations.
 
-For the future, we are hoping to introduce new methods which are not currently implemented. Here are some hints about the areas that we are currently working on. For the pre-processing denoising and eddy-current correction of the raw dMRI data. For group analysis we are implementing novel warping algorithms. We have also started looking into tissue characterization in microstructure \citep{assaf-blumenfeld-etal:08}. For the reconstruction we have already a first implementation of SHORE \citep{ozarslan2013mean} which we are currently enhancing with more features and for tracking we are looking into building a more general and adaptive interface.
+In the future, we are hoping to introduce new methods which are not currently implemented. Here are some hints about the areas that we are currently working on. For the pre-processing steps, we are currently implementing denoising and eddy-current correction of the raw dMRI data. For group analysis, we are creating novel warping algorithms. We have also started looking into tissue characterization in microstructure \citep{assaf-blumenfeld-etal:08}. For the reconstruction, we have already a first implementation of SHORE \citep{ozarslan2013mean} which we are currently enhancing with more features. For tracking, we are looking into building a more general and adaptive interface. For connectivity analysis, we are working with the Connectome Mapper (CM) \citep{daducci2012connectome} developers to further integrate Dipy into the CM pipeline. 
 
 As the size of the datasets in laboratories and hospitals around the world keeps increasing it is very important to use parallel processing to reduce the duration of analysis. For this purpose we have already implemented a parallel execution for the reconstruction step which is usually a bottleneck of the overall dMRI analysis. This is enabled through \texttt{peaks\_from\_model} by setting the parameter \texttt{parallel=True}. Nonetheless, we are working on parallelizing other bottlenecks of the pipeline either by using multi-processing or OpenMP through Cython. Of course, for those who are interested in computing every
 subject in parallel e.g. in a cluster or in a multi-core computer this is very easy to do with Python and Dipy and there are many tools which can facilitate this e.g. IPython, Nipype and others.
@@ -1424,7 +1423,7 @@ institutions in five countries (Canada, UK, USA, Italy and South Africa).
 \includegraphics[scale=0.37]{Figures/fig-gh2.jpg}
 \caption{Participation in the Dipy GitHub repository. The cumulative number of
   unique contributors has been extracted using the git log command and tallied. Many
-  new contributors have joined the project after the 0.6 release \label{Fig:gh_stats}}
+  new contributors have joined the project after the 0.6 release. \label{Fig:gh_stats}}
 \end{figure}
 
 In conclusion, we hope this paper inspires you to share our excitement in developing Dipy and encourages
